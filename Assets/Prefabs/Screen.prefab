@@ -118,7 +118,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 2100000, guid: 5ce9cbe5d8e75ab48a35be2b934d3362, type: 2}
+  - {fileID: 2100000, guid: 7f9db24831d2ef34cb33472b3b2a306c, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -152,7 +152,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 2100000, guid: 48b3a78b5f916de46bd7062b068854a2, type: 2}
+  - {fileID: 2100000, guid: c05bc5bdc3e96404b8abbcd5fda00d1c, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -186,9 +186,9 @@ TextMesh:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1098597854473656}
-  m_Text: 'Text
+  m_Text: 'ABabcdefYZ
 
-    asdf'
+    ABghijklYZ'
   m_OffsetZ: 0
   m_CharacterSize: 1
   m_LineSpacing: 1
@@ -198,7 +198,7 @@ TextMesh:
   m_FontSize: 500
   m_FontStyle: 0
   m_RichText: 1
-  m_Font: {fileID: 12800000, guid: deb071b9a936ee04eac809d47740f6fa, type: 3}
+  m_Font: {fileID: 12800000, guid: 69deaf1207c13ba488c6a80aefc12797, type: 3}
   m_Color:
     serializedVersion: 2
     rgba: 4294967295
@@ -228,7 +228,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   text: {fileID: 102335192247776524}
   Module: {fileID: 0}
-  startMessage: No, you've not\nbeen bamboozled.
+  startMessage: ABlkjYZ
   changeDelay: 2
 --- !u!114 &114635596519596226
 MonoBehaviour:

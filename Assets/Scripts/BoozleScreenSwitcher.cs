@@ -34,9 +34,7 @@ public class BoozleScreenSwitcher : MonoBehaviour {
     public void SetMessages(string[] newMessages)
     {
         StopCoroutine(CycleMessages());
-        List<string> mList = newMessages.ToList();
-        mList.Add("");
-        messages = mList.ToArray();
+        messages = newMessages;
         if (hasActivated) StartCoroutine(CycleMessages());
     }
 

@@ -15,6 +15,7 @@ public class BoozlEditorTestMode : MonoBehaviour  {
 
     private KMSelectable.OnInteractHandler[] funcs = new KMSelectable.OnInteractHandler[6];
     private KMSelectable.OnInteractHandler[] newFuncs = new KMSelectable.OnInteractHandler[6];
+    private System.Action[] ended = new System.Action[6];
 
     private void Start()
     {
@@ -36,6 +37,8 @@ public class BoozlEditorTestMode : MonoBehaviour  {
         {
             funcs[i] = buttons[i].OnInteract;
             buttons[i].OnInteract = newFuncs[i];
+            ended[i] = buttons[i].OnInteractEnded;
+            buttons[i].OnInteractEnded = delegate () { };
         }
         switcher.GetType().GetField("isEditorMode", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(switcher, true);
         switcher.SetMessagesDebug(debugSounds.Select(x => x.name).ToArray());
@@ -47,7 +50,9 @@ public class BoozlEditorTestMode : MonoBehaviour  {
         for (int i = 0; i < 6; i++)
         {
             buttons[i].OnInteract = funcs[i];
+            buttons[i].OnInteractEnded = ended[i];
         }
+        buttons[5].OnInteract();
         switcher.GetType().GetField("isEditorMode", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(switcher, false);
         switcher.StartCoroutine(switcher.CycleMessages());
     }

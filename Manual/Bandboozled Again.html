@@ -1,0 +1,139 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1">
+    <title>Bandboozled Again — Keep Talking and Nobody Explodes Module</title>
+    <link rel="stylesheet" type="text/css" href="css/font.css">
+    <link rel="stylesheet" type="text/css" href="css/normalize.css">
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+    <script src="js/ktane-utils.js"></script>
+    <style>
+        table {
+            margin: 1em auto;
+			border: none;
+        }
+		@font-face {
+		  font-family: Glyph;
+		  font-style: normal;
+		  font-weight: 400;
+		  src: url(./font/bandzleglyphs.ttf);
+		}
+		.Glyph {
+			font-family: Glyph;
+		}
+		.corner {
+            border: none;
+		}
+    </style>
+</head>
+<body>
+    <div class="section">
+        <div class="page page-bg-01">
+            <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                <span class="page-header-section-title">Bandboozled Again</span>
+            </div>
+            <div class="page-content">
+				<img src="img/Component/Bandboozled Again.svg" class="diagram">
+				<h2 class="fade">On the Subject of Bandboozled Again</h2>
+				<p class="flavour-text">Doot doot.</p>
+				<p>Buttons play notes when pressed (1-lowest to 6-highest)</p>
+				<h4>Table maps Bandzleglyphs to letters.</h4>
+				<table>
+					<tr class="Glyph">
+						<td class="corner" />
+						<td>a</td>
+						<td>b</td>
+						<td>c</td>
+						<td>d</td>
+						<td>e</td>
+						<td>f</td>
+					</tr>
+					<tr>
+						<td class="Glyph">g</td>
+						<td>A</td>
+						<td>B</td>
+						<td>C</td>
+						<td>D</td>
+						<td>E</td>
+						<td>F</td>
+					</tr>
+					<tr>
+						<td class="Glyph">h</td>
+						<td>G</td>
+						<td>H</td>
+						<td>I</td>
+						<td>J</td>
+						<td>K</td>
+						<td>L</td>
+					</tr>
+					<tr>
+						<td class="Glyph">i</td>
+						<td>M</td>
+						<td>N</td>
+						<td>O</td>
+						<td>P</td>
+						<td>Q</td>
+						<td>R</td>
+					</tr>
+					<tr>
+						<td class="Glyph">j</td>
+						<td>S</td>
+						<td>T</td>
+						<td>U</td>
+						<td>V</td>
+						<td>W</td>
+						<td>X</td>
+					</tr>
+					<tr>
+						<td class="Glyph">k</td>
+						<td>Y</td>
+						<td>Z</td>
+						<td>1</td>
+						<td>2</td>
+						<td>3</td>
+						<td>4</td>
+					</tr>
+					<tr>
+						<td class="Glyph">l</td>
+						<td>5</td>
+						<td>6</td>
+						<td>7</td>
+						<td>8</td>
+						<td>9</td>
+						<td>0</td>
+					</tr>
+				</table>
+				<p>You get ten letters total.</p>
+				<table>
+					<tr>
+						<td>Clavichord</td>
+						<td>Concertina</td>
+						<td>Bass Guitar</td>
+						<td>Didgeridoo</td>
+						<td>Flugelhorn</td>
+						<td>French Horn</td>
+					</tr>
+					<tr>
+						<td>Grand Piano</td>
+						<td>Kettle Drum</td>
+						<td>Percussion</td>
+						<td>Sousaphone</td>
+						<td>Tambourine</td>
+						<td>Vibraphone</td>
+					</tr>
+				</table>
+				<p>Words have been Caesar shifted forward A steps [0,36) and rotated B steps left [0,10) (0 is after Z)</p>
+				<p>Encrypt corresponding word, buttons have exactly one letter match among them.</p>
+				<p>Its note value is how long to hold for (timer ticks)</p>
+				<p>You're always holding the button whose letter is first in Chinese reading order in the chart</p>
+				<p>You're starting the hold on timer's last digit = B</p>
+				<p>Once done, if A is odd, tap all brass buttons, otherwise all wooden (invert press if label has a loop (press <-> no press))</p>
+				<p>LED order is: correct button, correct start, correct length, correct presses</p>
+			</div>
+            <div class="page-footer relative-footer">Page 1 of 1</div>
+        </div>
+    </div>
+</body>
+</html>
