@@ -71,10 +71,12 @@ public class BandBoozLogic : MonoBehaviour {
         Debug.LogFormat("[Bandboozled Again #{0}] Key word (decrypted) is: {1}", _id, key.Join("").ToUpperInvariant());
         char[] other = (a == 1 ? topWords : bottomWords)[b];
         int A = Random.Range(0, 36);
+        bool keyloop = key.ToString().IsLoop();
+        bool otherloop = other.ToString().IsLoop();
         for (int i = 0; i < 10; i++)
         {
-            key[i] = ALPHABET[(ALPHABET.IndexOf(key[i]) + A) % ALPHABET.Length];
-            other[i] = ALPHABET[(ALPHABET.IndexOf(other[i]) + A) % ALPHABET.Length];
+            key[i] = ALPHABET[(ALPHABET.IndexOf(key[i]) + (keyloop ? A : ALPHABET.Length - A)) % ALPHABET.Length];
+            other[i] = ALPHABET[(ALPHABET.IndexOf(other[i]) + (otherloop ? A : ALPHABET.Length - A)) % ALPHABET.Length];
         }
         int B = Random.Range(0, 10);
         Debug.LogFormat("[Bandboozled Again #{0}] A: {1} B: {2}", _id, A, B);
@@ -128,7 +130,7 @@ public class BandBoozLogic : MonoBehaviour {
     private void Press(int input)
     {
         if (_isSolved) return;
-        Debug.LogFormat("[Bandboozled Again #{0}] Pressed button {1} on a {2}.", _id, input + 1, Mathf.FloorToInt(timeDown % 10));
+        Debug.LogFormat("[Bandboozled Again #{0}] Pressed button {1} on a {2}.", _id, input + 1, Mathf.FloorToInt(Info.GetTime() % 10));
         if (holdStage)
         {
             timeDown = Info.GetTime();
@@ -245,7 +247,7 @@ public static class Extensions
             {
                 if (input == TABLE[i][j])
                 {
-                    return (Random.Range(0, 1) == 0) ? LEFT[j].ToString() + TOP[i].ToString() : TOP[i].ToString() + LEFT[j].ToString();
+                    return (Random.Range(0, 1) == 0) ? LEFT[i].ToString() + TOP[j].ToString() : TOP[j].ToString() + LEFT[i].ToString();
                 }
             }
         return "";
