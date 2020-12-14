@@ -33,6 +33,7 @@ public class BoozlEditorTestMode : MonoBehaviour  {
     private IEnumerator MakeButtons()
     {
         yield return null;
+        yield return null;
         for (int i = 0; i < 6; i++)
         {
             funcs[i] = buttons[i].OnInteract;
