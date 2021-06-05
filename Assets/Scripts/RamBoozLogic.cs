@@ -157,7 +157,8 @@ public class RamBoozLogic : MonoBehaviour {
         else
         {
             int b = Random.Range(0, 18);
-            char[] key = Words[b];
+            char[] key = new char[9];
+            Words[b].CopyTo(key, 0);
             Debug.LogFormat("[Ramboozled Again #{0}] Key word (decrypted) is: {1}", _id, key.Join("").ToUpperInvariant());
             int A, B;
             do

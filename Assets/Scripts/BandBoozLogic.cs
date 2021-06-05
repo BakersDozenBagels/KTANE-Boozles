@@ -67,9 +67,11 @@ public class BandBoozLogic : MonoBehaviour {
     {
         int a = Random.Range(0, 2);
         int b = Random.Range(0, 6);
-        char[] key = (a == 0 ? topWords : bottomWords)[b];
+        char[] key = new char[10];
+        (a == 0 ? topWords : bottomWords)[b].CopyTo(key, 0);
         Debug.LogFormat("[Bandboozled Again #{0}] Key word (decrypted) is: {1}", _id, key.Join("").ToUpperInvariant());
-        char[] other = (a == 1 ? topWords : bottomWords)[b];
+        char[] other = new char[10];
+        (a == 1 ? topWords : bottomWords)[b].CopyTo(other, 0);
         int A = Random.Range(0, 36);
         bool keyloop = key.ToString().IsLoop();
         bool otherloop = other.ToString().IsLoop();
