@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using System.Text.RegularExpressions;
+using System;
 
 /* TODO:
  * Recieve input
@@ -65,14 +67,14 @@ public class BandBoozLogic : MonoBehaviour {
 
     private void Generate()
     {
-        int a = Random.Range(0, 2);
-        int b = Random.Range(0, 6);
+        int a = UnityEngine.Random.Range(0, 2);
+        int b = UnityEngine.Random.Range(0, 6);
         char[] key = new char[10];
         (a == 0 ? topWords : bottomWords)[b].CopyTo(key, 0);
         Debug.LogFormat("[Bandboozled Again #{0}] Key word (decrypted) is: {1}", _id, key.Join("").ToUpperInvariant());
         char[] other = new char[10];
         (a == 1 ? topWords : bottomWords)[b].CopyTo(other, 0);
-        int A = Random.Range(0, 36);
+        int A = UnityEngine.Random.Range(0, 36);
         bool keyloop = key.ToString().IsLoop();
         bool otherloop = other.ToString().IsLoop();
         for (int i = 0; i < 10; i++)
@@ -80,7 +82,7 @@ public class BandBoozLogic : MonoBehaviour {
             key[i] = ALPHABET[(ALPHABET.IndexOf(key[i]) + (keyloop ? A : ALPHABET.Length - A)) % ALPHABET.Length];
             other[i] = ALPHABET[(ALPHABET.IndexOf(other[i]) + (otherloop ? A : ALPHABET.Length - A)) % ALPHABET.Length];
         }
-        int B = Random.Range(0, 10);
+        int B = UnityEngine.Random.Range(0, 10);
         Debug.LogFormat("[Bandboozled Again #{0}] A: {1} B: {2}", _id, A, B);
         List<char> keyL = key.Skip(B).ToList();
         keyL.AddRange(key.Take(B));
@@ -91,10 +93,10 @@ public class BandBoozLogic : MonoBehaviour {
             display += letter.ToBandzleglyphs();
         }
         switcher.SetMessages(new string[] { "AB" + display.Take(display.Length/2).Join("") + "YZ\nAB" + display.Skip(display.Length / 2).Join("") + "YZ" });
-        List<char> labelsC = ALPHABET.ToCharArray().Where(x => !other.Contains(x)).OrderBy(x => Random.Range(0, 10000)).Take(5).ToList();
+        List<char> labelsC = ALPHABET.ToCharArray().Where(x => !other.Contains(x)).OrderBy(x => UnityEngine.Random.Range(0, 10000)).Take(5).ToList();
         char c = other.PickRandom();
         labelsC.Add(c);
-        labelsC = labelsC.OrderBy(x => Random.Range(0, 10000)).ToList();
+        labelsC = labelsC.OrderBy(x => UnityEngine.Random.Range(0, 10000)).ToList();
         CorrectButton = labelsC.IndexOf(c);
         for (int i = 0; i < 6; i++)
             for (int j = 5; j >= 0; j--)
@@ -107,13 +109,13 @@ public class BandBoozLogic : MonoBehaviour {
         {
             texts[i].text = labels[i];
             if (other.Contains(labelsC[i])) soundPosition = i;
-            buttonColors[i] = Random.Range(0, 2) == 1;
+            buttonColors[i] = UnityEngine.Random.Range(0, 2) == 1;
             buttonRenderers[i].material = buttonColors[i] ? materials[0] : materials[1];
         }
         Debug.LogFormat("[Bandboozled Again #{0}] Button colors (reading order): {1}", _id, buttonColors.Select(x => x ? "Brass" : "Wood").Join(", "));
         for (int i = 0; i < 6; i++)
             buttonColors[i] ^= labels[i].IsLoop();
-        int[] soundOrder = new int[] { 0, 1, 2, 3, 4, 5 }.OrderBy(x => Random.Range(0, 10000)).ToArray();
+        int[] soundOrder = new int[] { 0, 1, 2, 3, 4, 5 }.OrderBy(x => UnityEngine.Random.Range(0, 10000)).ToArray();
         foreach (ButtonAudio y in Module.GetComponentsInChildren<ButtonAudio>())
             y.clips = buttonClips.OrderBy(x => soundOrder[System.Array.IndexOf(buttonClips, x)]).ToArray();
         CorrectTime = System.Array.IndexOf(soundOrder, soundPosition) + 1;
@@ -232,6 +234,164 @@ public class BandBoozLogic : MonoBehaviour {
         StopAllCoroutines();
         leds.StopAllCoroutines();
     }
+
+    //twitch plays
+    #pragma warning disable 414
+    bool TwitchZenMode;
+    private readonly string TwitchHelpMessage = @"!{0} hold <btn> at <#> for <#₂> [Holds the specified button when the last digit of the bomb's timer is '#' for '#₂' seconds] | !{0} press <btn> (btn2)... [Presses the specified button(s)] | Valid buttons are tl, tm, tr, bl, bm, or br";
+    #pragma warning restore 414
+    IEnumerator ProcessTwitchCommand(string command)
+    {
+        string[] parameters = command.Split(' ');
+        if (Regex.IsMatch(parameters[0], @"^\s*hold\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
+        {
+            yield return null;
+            if (parameters.Length == 1 || parameters.Length == 2 || parameters.Length == 3 || parameters.Length == 4 || parameters.Length == 5 || parameters.Length > 6)
+            {
+                yield return "sendtochaterror Incorrect hold command format! Expected '!{1} hold <btn> at <#> for <#₂>'!";
+            }
+            else if (parameters.Length == 6)
+            {
+                if (!parameters[2].EqualsIgnoreCase("at"))
+                {
+                    yield return "sendtochaterror Incorrect hold command format! Expected '!{1} hold <btn> at <#> for <#₂>' but 'at' was not present!";
+                    yield break;
+                }
+                if (!parameters[4].EqualsIgnoreCase("for"))
+                {
+                    yield return "sendtochaterror Incorrect hold command format! Expected '!{1} hold <btn> at <#> for <#₂>' but 'for' was not present!";
+                    yield break;
+                }
+                string[] positions = { "tl", "tm", "tr", "bl", "bm", "br" };
+                if (!positions.Contains(parameters[1].ToLower()))
+                {
+                    yield return "sendtochaterror Incorrect hold command format! Expected '!{1} hold <btn> at <#> for <#₂>' but 'btn' is not a valid button!";
+                    yield break;
+                }
+                int temp = 0;
+                if (!int.TryParse(parameters[3], out temp))
+                {
+                    yield return "sendtochaterror Incorrect hold command format! Expected '!{1} hold <btn> at <#> for <#₂>' but '#' is not a valid digit between 0-9!";
+                    yield break;
+                }
+                if (temp < 0 || temp > 9)
+                {
+                    yield return "sendtochaterror Incorrect hold command format! Expected '!{1} hold <btn> at <#> for <#₂>' but '#' is not a valid digit between 0-9!";
+                    yield break;
+                }
+                int temp2 = 0;
+                if (!int.TryParse(parameters[5], out temp2))
+                {
+                    yield return "sendtochaterror Incorrect hold command format! Expected '!{1} hold <btn> at <#> for <#₂>' but '#₂' is not a valid digit between 1-6!";
+                    yield break;
+                }
+                if (temp2 < 1 || temp2 > 6)
+                {
+                    yield return "sendtochaterror Incorrect hold command format! Expected '!{1} hold <btn> at <#> for <#₂>' but '#₂' is not a valid digit between 1-6!";
+                    yield break;
+                }
+                while ((int)Info.GetTime() % 10 != temp) { yield return "trycancel Halted waiting to hold the button due to a request to cancel!"; }
+                moduleSelectable.Children[Array.IndexOf(positions, parameters[1].ToLower())].OnInteract();
+                int timer = (int)Info.GetTime();
+                if (TwitchZenMode)
+                    timer += temp2;
+                else
+                    timer -= temp2;
+                while ((int)Info.GetTime() != timer) { yield return null; }
+                moduleSelectable.Children[Array.IndexOf(positions, parameters[1].ToLower())].OnInteractEnded();
+                if (neededPressesNow == 0 && !corrects.All(x => x == 1))
+                    yield return "strike";
+            }
+            yield break;
+        }
+        if (Regex.IsMatch(parameters[0], @"^\s*press\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
+        {
+            yield return null;
+            if (parameters.Length == 1)
+            {
+                yield return "sendtochaterror Please specify the button(s) to press!";
+            }
+            else
+            {
+                string[] positions = { "tl", "tm", "tr", "bl", "bm", "br" };
+                for (int i = 1; i < parameters.Length; i++)
+                {
+                    if (!positions.Contains(parameters[i].ToLower()))
+                    {
+                        yield return "sendtochaterror!f The specified button to press '" + parameters[i] + "' is invalid!";
+                        yield break;
+                    }
+                }
+                for (int i = 1; i < parameters.Length; i++)
+                {
+                    moduleSelectable.Children[Array.IndexOf(positions, parameters[i].ToLower())].OnInteract();
+                    yield return new WaitForSeconds(0.1f);
+                    moduleSelectable.Children[Array.IndexOf(positions, parameters[i].ToLower())].OnInteractEnded();
+                }
+                if (neededPressesNow == 0 && !corrects.All(x => x == 1))
+                    yield return "strike";
+            }
+            yield break;
+        }
+    }
+
+    IEnumerator TwitchHandleForcedSolve()
+    {
+        if (!holdStage)
+        {
+            if (corrects[0] != 1 || corrects[1] != 1 || corrects[2] != 1)
+            {
+                Module.HandlePass();
+                if (neededPressesNow == 0)
+                    StopAllCoroutines();
+                yield break;
+            }
+            if (neededPressesNow < neededPresses && corrects[3] != 1)
+            {
+                Module.HandlePass();
+                if (neededPressesNow == 0)
+                    StopAllCoroutines();
+                yield break;
+            }
+
+            for (int i = 0; i < buttonColors.Length; i++)
+            {
+                if (buttonColors[i])
+                {
+                    moduleSelectable.Children[i].OnInteract();
+                    yield return new WaitForSeconds(0.1f);
+                    moduleSelectable.Children[i].OnInteractEnded();
+                }
+            }
+        }
+        else
+        {
+            while ((int)Info.GetTime() % 10 != holdStart)
+                yield return true;
+            moduleSelectable.Children[CorrectButton].OnInteract();
+            float start = Info.GetTime();
+            if (TwitchZenMode)
+            {
+                while (!(Mathf.Abs(start - Info.GetTime()) > CorrectTime - 0.5f && Mathf.Abs(start - Info.GetTime()) < CorrectTime + 0.5f) || (Info.GetTime() - start < 0.5f))
+                    yield return null;
+            }
+            else
+            {
+                while (!(Mathf.Abs(start - Info.GetTime()) > CorrectTime - 0.5f && Mathf.Abs(start - Info.GetTime()) < CorrectTime + 0.5f) || (start - Info.GetTime() < 0.5f))
+                    yield return null;
+            }
+            moduleSelectable.Children[CorrectButton].OnInteractEnded();
+            for (int i = 0; i < buttonColors.Length; i++)
+            {
+                if (buttonColors[i])
+                {
+                    moduleSelectable.Children[i].OnInteract();
+                    yield return new WaitForSeconds(0.1f);
+                    moduleSelectable.Children[i].OnInteractEnded();
+                }
+            }
+        }
+    }
 }
 
 public static class Extensions
@@ -249,7 +409,7 @@ public static class Extensions
             {
                 if (input == TABLE[i][j])
                 {
-                    return (Random.Range(0, 1) == 0) ? LEFT[i].ToString() + TOP[j].ToString() : TOP[j].ToString() + LEFT[i].ToString();
+                    return (UnityEngine.Random.Range(0, 1) == 0) ? LEFT[i].ToString() + TOP[j].ToString() : TOP[j].ToString() + LEFT[i].ToString();
                 }
             }
         return "";

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using KModkit;
+using System.Text.RegularExpressions;
+using System;
 
 /* TODO:
  * Generate A&B properly
@@ -76,7 +78,7 @@ public class RamBoozLogic : MonoBehaviour {
 
         Debug.LogFormat("<Ramboozled Again #{0}> Edgework tests are: {1}", _id, edgeworkTests.Join(", "));
 
-        List<char> labelsC = ALPHABET.ToCharArray().OrderBy(x => Random.Range(0, 10000)).Take(6).ToList();
+        List<char> labelsC = ALPHABET.ToCharArray().OrderBy(x => UnityEngine.Random.Range(0, 10000)).Take(6).ToList();
         char[] labelsC2 = new char[] { ' ', ' ', ' ', ' ', ' ', ' ' };
         labelsVals = new int[] { -1, -1, -1, -1, -1, -1 }.ToList();
         for (int i = 0; i < 6; i++)
@@ -91,14 +93,14 @@ public class RamBoozLogic : MonoBehaviour {
         string[] labels = labelsC.Select(x => x.ToRamzleglyphs(' ') + "\n" + labelsC2[labelsC.IndexOf(x)].ToRamzleglyphs(x)).ToArray();
         Debug.LogFormat("[Ramboozled Again #{0}] Button labels are (reading order): {1}", _id, labelsC.Select(x => x.ToString() + labelsC2[labelsC.IndexOf(x)]).Join(", "));
         Debug.LogFormat("<Ramboozled Again #{0}> Button glyphs are: {1}", _id, labels.Join(", "));
-        int b = Random.Range(0, 18);
+        int b = UnityEngine.Random.Range(0, 18);
         char[] key = Words[b];
         Debug.LogFormat("[Ramboozled Again #{0}] Key word (decrypted) is: {1}", _id, key.Join("").ToUpperInvariant());
         int A, B;
         do
         {
-            A = Random.Range(0, 26);
-            B = Random.Range(0, 9);
+            A = UnityEngine.Random.Range(0, 26);
+            B = UnityEngine.Random.Range(0, 9);
         }
         while (!labelsVals.Contains((A * B) % 26));
         for (int i = 0; i < 9; i++)
@@ -122,7 +124,7 @@ public class RamBoozLogic : MonoBehaviour {
         for (int i = 0; i < 6; i++)
         {
             texts[i].text = labels[i];
-            buttonColors[i] = Random.Range(0, 4);
+            buttonColors[i] = UnityEngine.Random.Range(0, 4);
             buttonRenderers[i].material = materials[buttonColors[i]];
         }
         Debug.LogFormat("[Ramboozled Again #{0}] Button colors (reading order): {1}", _id, buttonColors.Select(x => x == 0 ? "Black" : (x == 1 ? "Brown" : (x == 2 ? "Tan" : "White"))).Join(", "));
@@ -156,15 +158,15 @@ public class RamBoozLogic : MonoBehaviour {
         if (neededPressesNow == 0) CheckInput();
         else
         {
-            int b = Random.Range(0, 18);
+            int b = UnityEngine.Random.Range(0, 18);
             char[] key = new char[9];
             Words[b].CopyTo(key, 0);
             Debug.LogFormat("[Ramboozled Again #{0}] Key word (decrypted) is: {1}", _id, key.Join("").ToUpperInvariant());
             int A, B;
             do
             {
-                A = Random.Range(0, 36);
-                B = Random.Range(0, 9);
+                A = UnityEngine.Random.Range(0, 36);
+                B = UnityEngine.Random.Range(0, 9);
             }
             while (!labelsVals.Contains((A * B) % 26));
             for (int i = 0; i < 9; i++)
@@ -248,6 +250,105 @@ public class RamBoozLogic : MonoBehaviour {
         StopAllCoroutines();
         leds.StopAllCoroutines();
     }
+
+    //twitch plays
+    #pragma warning disable 414
+    bool TwitchZenMode;
+    private readonly string TwitchHelpMessage = @"!{0} press <btn> at <#> [Presses the specified button when the last digit of the bomb's timer is '#'] | Valid buttons are tl, tm, tr, bl, bm, or br";
+    #pragma warning restore 414
+    IEnumerator ProcessTwitchCommand(string command)
+    {
+        string[] parameters = command.Split(' ');
+        if (Regex.IsMatch(parameters[0], @"^\s*press\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
+        {
+            yield return null;
+            if (parameters.Length == 1 || parameters.Length == 2 || parameters.Length == 3 || parameters.Length > 4)
+            {
+                yield return "sendtochaterror Incorrect press command format! Expected '!{1} press <btn> at <#>'!";
+            }
+            else if (parameters.Length == 4)
+            {
+                if (!parameters[2].EqualsIgnoreCase("at"))
+                {
+                    yield return "sendtochaterror Incorrect press command format! Expected '!{1} press <btn> at <#>' but 'at' was not present!";
+                    yield break;
+                }
+                string[] positions = { "tl", "tm", "tr", "bl", "bm", "br" };
+                if (!positions.Contains(parameters[1].ToLower()))
+                {
+                    yield return "sendtochaterror Incorrect press command format! Expected '!{1} press <btn> at <#>' but 'btn' is not a valid button!";
+                    yield break;
+                }
+                int temp = 0;
+                if (!int.TryParse(parameters[3], out temp))
+                {
+                    yield return "sendtochaterror Incorrect press command format! Expected '!{1} press <btn> at <#>' but '#' is not a valid digit between 0-9!";
+                    yield break;
+                }
+                if (temp < 0 || temp > 9)
+                {
+                    yield return "sendtochaterror Incorrect press command format! Expected '!{1} press <btn> at <#>' but '#' is not a valid digit between 0-9!";
+                    yield break;
+                }
+                while ((int)Info.GetTime() % 10 != temp) { yield return "trycancel Halted waiting to press the button due to a request to cancel!"; }
+                moduleSelectable.Children[Array.IndexOf(positions, parameters[1].ToLower())].OnInteract();
+                float timer = Info.GetTime();
+                if (TwitchZenMode)
+                    while (Info.GetTime() <= (timer + 0.5f)) { yield return null; }
+                else
+                    while (Info.GetTime() >= (timer - 0.5f)) { yield return null; }
+                moduleSelectable.Children[Array.IndexOf(positions, parameters[1].ToLower())].OnInteractEnded();
+                if (neededPressesNow == 0 && !corrects.All(x => x == 1))
+                    yield return "strike";
+            }
+            yield break;
+        }
+    }
+
+    IEnumerator TwitchHandleForcedSolve()
+    {
+        if (neededPressesNow == 0)
+        {
+            Module.HandlePass();
+            StopAllCoroutines();
+            yield break;
+        }
+        int presses = neededPresses - neededPressesNow;
+        for (int i = 0; i < presses; i++)
+        {
+            if (corrects[i] != 1)
+            {
+                Module.HandlePass();
+                yield break;
+            }
+        }
+
+        for (int j = presses; j < 4; j++)
+        {
+            for (int i = 0; i < 6; i++)
+            {
+                if (labelsVals[i] == screenVal)
+                {
+                    while ((int)Info.GetTime() % 10 != edgeworkTests[buttonColors[i]])
+                        yield return true;
+                    moduleSelectable.Children[i].OnInteract();
+                    float start = Info.GetTime();
+                    if (TwitchZenMode)
+                    {
+                        while ((Info.GetTime() - start) < 0.5f)
+                            yield return null;
+                    }
+                    else
+                    {
+                        while ((start - Info.GetTime()) < 0.5f)
+                            yield return null;
+                    }
+                    moduleSelectable.Children[i].OnInteractEnded();
+                    break;
+                }
+            }
+        }
+    }
 }
 
 public static class RamExtensions
@@ -275,7 +376,7 @@ public static class RamExtensions
                 if (item == Input) results.Add(TOP[System.Array.IndexOf(row, item)].ToString() + LEFT[System.Array.IndexOf(TABLE, row)].ToString());
             }
         }
-        return results.OrderBy(x => Random.Range(0, 10000)).FirstOrDefault();
+        return results.OrderBy(x => UnityEngine.Random.Range(0, 10000)).FirstOrDefault();
     }
 
     public static bool IsNull(this string str, char ch)
