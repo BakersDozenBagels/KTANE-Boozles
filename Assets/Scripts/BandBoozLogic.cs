@@ -11,7 +11,8 @@ using System;
  * Finish manual
  */
 
-public class BandBoozLogic : MonoBehaviour {
+public class BandBoozLogic : MonoBehaviour
+{
     public KMBombModule Module;
     public BoozleScreenSwitcher switcher;
     public BoozLEDManager leds;
@@ -44,22 +45,23 @@ public class BandBoozLogic : MonoBehaviour {
     private int[] corrects = new int[] { 0, 0, 0, 0 };
 
     // Use this for initialization
-    void Start () {
+    void Start()
+    {
         _id = counter++;
         Generate();
-        foreach (KMSelectable button in moduleSelectable.Children)
+        foreach(KMSelectable button in moduleSelectable.Children)
         {
             button.OnInteract += delegate () { button.GetComponent<ButtonAudio>().PlaySound(); button.transform.localPosition += new Vector3(0f, -0.005f, 0f); return false; };
             button.OnInteractEnded += delegate () { button.transform.localPosition += new Vector3(0f, 0.005f, 0f); PressUp(); };
         }
-        for (int i = 0; i < moduleSelectable.Children.Length; i++)
+        for(int i = 0; i < moduleSelectable.Children.Length; i++)
         {
             int j = i;
             moduleSelectable.Children[i].OnInteract += delegate () { Press(j); return false; };
         }
         Module.OnActivate += delegate () { Activate(); };
-	}
-	
+    }
+
     private void Activate()
     {
         Audio.PlaySoundAtTransform(startClip.name, transform);
@@ -67,63 +69,70 @@ public class BandBoozLogic : MonoBehaviour {
 
     private void Generate()
     {
+        retry:
         int a = UnityEngine.Random.Range(0, 2);
         int b = UnityEngine.Random.Range(0, 6);
         char[] key = new char[10];
         (a == 0 ? topWords : bottomWords)[b].CopyTo(key, 0);
-        Debug.LogFormat("[Bandboozled Again #{0}] Key word (decrypted) is: {1}", _id, key.Join("").ToUpperInvariant());
         char[] other = new char[10];
         (a == 1 ? topWords : bottomWords)[b].CopyTo(other, 0);
         int A = UnityEngine.Random.Range(0, 36);
-        bool keyloop = key.ToString().IsLoop();
-        bool otherloop = other.ToString().IsLoop();
-        for (int i = 0; i < 10; i++)
+        bool keyloop = UnityEngine.Random.Range(0, 2) == 0;
+        bool otherloop = UnityEngine.Random.Range(0, 2) == 0;
+        for(int i = 0; i < 10; i++)
         {
             key[i] = ALPHABET[(ALPHABET.IndexOf(key[i]) + (keyloop ? A : ALPHABET.Length - A)) % ALPHABET.Length];
             other[i] = ALPHABET[(ALPHABET.IndexOf(other[i]) + (otherloop ? A : ALPHABET.Length - A)) % ALPHABET.Length];
         }
         int B = UnityEngine.Random.Range(0, 10);
-        Debug.LogFormat("[Bandboozled Again #{0}] A: {1} B: {2}", _id, A, B);
         List<char> keyL = key.Skip(B).ToList();
         keyL.AddRange(key.Take(B));
         key = keyL.ToArray();
         string display = "";
-        foreach (char letter in key)
+        string log = "";
+        foreach(char letter in key)
         {
             display += letter.ToBandzleglyphs();
+            log += letter;
         }
-        switcher.SetMessages(new string[] { "AB" + display.Take(display.Length/2).Join("") + "YZ\nAB" + display.Skip(display.Length / 2).Join("") + "YZ" });
+        if(display.Take(display.Length / 2).Join("").IsLoop() != keyloop || display.Skip(display.Length / 2).Join("").IsLoop() != otherloop)
+            goto retry;
+        Debug.LogFormat("[Bandboozled Again #{0}] Key word (decrypted) is: {1}", _id, key.Join("").ToUpperInvariant());
+        Debug.LogFormat("[Bandboozled Again #{0}] A: {1} B: {2}", _id, A, B);
+        Debug.LogFormat("[Bandboozled Again #{0}] Encrypted display is: {1}", _id, log);
+        Debug.LogFormat("[Bandboozled Again #{0}] The top {1} a useless loop, and the bottom {2}.", _id, display.Take(display.Length / 2).Join("").IsLoop() ? "is" : "is not", display.Skip(display.Length / 2).Join("").IsLoop() ? "is" : "is not");
+        switcher.SetMessages(new string[] { "AB" + display.Take(display.Length / 2).Join("") + "YZ\nAB" + display.Skip(display.Length / 2).Join("") + "YZ" });
         List<char> labelsC = ALPHABET.ToCharArray().Where(x => !other.Contains(x)).OrderBy(x => UnityEngine.Random.Range(0, 10000)).Take(5).ToList();
         char c = other.PickRandom();
         labelsC.Add(c);
         labelsC = labelsC.OrderBy(x => UnityEngine.Random.Range(0, 10000)).ToList();
         CorrectButton = labelsC.IndexOf(c);
-        for (int i = 0; i < 6; i++)
-            for (int j = 5; j >= 0; j--)
-                if (labelsC.Contains(TABLE[j][i]))
+        for(int i = 0; i < 6; i++)
+            for(int j = 5; j >= 0; j--)
+                if(labelsC.Contains(TABLE[j][i]))
                     CorrectButton = labelsC.IndexOf(TABLE[j][i]);
         string[] labels = labelsC.Select(x => "AB" + x.ToBandzleglyphs() + "YZ").ToArray();
         Debug.LogFormat("[Bandboozled Again #{0}] Button labels are (reading order) (#! is loop): {1}", _id, labelsC.Select(x => (other.Contains(x) ? "{" : "") + x + (labels[labelsC.IndexOf(x)].IsLoop() ? "!" : "") + (other.Contains(x) ? "}" : "")).Join(", "));
         int soundPosition = -1;
-        for (int i = 0; i < 6; i++)
+        for(int i = 0; i < 6; i++)
         {
             texts[i].text = labels[i];
-            if (other.Contains(labelsC[i])) soundPosition = i;
+            if(other.Contains(labelsC[i])) soundPosition = i;
             buttonColors[i] = UnityEngine.Random.Range(0, 2) == 1;
             buttonRenderers[i].material = buttonColors[i] ? materials[0] : materials[1];
         }
         Debug.LogFormat("[Bandboozled Again #{0}] Button colors (reading order): {1}", _id, buttonColors.Select(x => x ? "Brass" : "Wood").Join(", "));
-        for (int i = 0; i < 6; i++)
+        for(int i = 0; i < 6; i++)
             buttonColors[i] ^= labels[i].IsLoop();
         int[] soundOrder = new int[] { 0, 1, 2, 3, 4, 5 }.OrderBy(x => UnityEngine.Random.Range(0, 10000)).ToArray();
-        foreach (ButtonAudio y in Module.GetComponentsInChildren<ButtonAudio>())
+        foreach(ButtonAudio y in Module.GetComponentsInChildren<ButtonAudio>())
             y.clips = buttonClips.OrderBy(x => soundOrder[System.Array.IndexOf(buttonClips, x)]).ToArray();
         CorrectTime = System.Array.IndexOf(soundOrder, soundPosition) + 1;
         Debug.LogFormat("[Bandboozled Again #{0}] Pitches' buttons (lowest to highest): {1}", _id, soundOrder.Select(x => x + 1).Join(", "));
         holdStart = B;
-        if (A % 2 == 0) buttonColors = buttonColors.Select(x => x ^= true).ToArray();
+        if(A % 2 == 0) buttonColors = buttonColors.Select(x => x ^= true).ToArray();
         neededPressesNow = neededPresses = buttonColors.Count(x => x);
-        if (neededPresses <= 0) corrects[3] = 1;
+        if(neededPresses <= 0) corrects[3] = 1;
     }
 
     private float timeDown = -1;
@@ -133,28 +142,28 @@ public class BandBoozLogic : MonoBehaviour {
 
     private void Press(int input)
     {
-        if (_isSolved) return;
+        if(_isSolved) return;
         Debug.LogFormat("[Bandboozled Again #{0}] Pressed button {1} on a {2}.", _id, input + 1, Mathf.FloorToInt(Info.GetTime() % 10));
-        if (holdStage)
+        if(holdStage)
         {
             timeDown = Info.GetTime();
-            if (input == CorrectButton) corrects[0] = 1;
+            if(input == CorrectButton) corrects[0] = 1;
             else corrects[0] = 0;
-            if (Mathf.FloorToInt(timeDown % 10) == holdStart) corrects[1] = 1;
+            if(Mathf.FloorToInt(timeDown % 10) == holdStart) corrects[1] = 1;
             else corrects[1] = 0;
         }
         else
         {
-            if (buttonColors[input])
+            if(buttonColors[input])
             {
                 buttonColors[input] = false;
-                if (neededPresses == neededPressesNow) corrects[3] = 1;
-                else if (corrects[3] == 0) corrects[3] = 2;
+                if(neededPresses == neededPressesNow) corrects[3] = 1;
+                else if(corrects[3] == 0) corrects[3] = 2;
             }
             else
             {
-                if (neededPresses == neededPressesNow) corrects[3] = 0;
-                else if (corrects[3] == 1) corrects[3] = 2;
+                if(neededPresses == neededPressesNow) corrects[3] = 0;
+                else if(corrects[3] == 1) corrects[3] = 2;
             }
             neededPressesNow--;
         }
@@ -162,23 +171,23 @@ public class BandBoozLogic : MonoBehaviour {
 
     private void PressUp()
     {
-        if (_isSolved) return;
-        if (holdStage)
+        if(_isSolved) return;
+        if(holdStage)
         {
             Debug.LogFormat("[Bandboozled Again #{0}] Released after {1} seconds.", _id, Mathf.Abs(timeDown - Info.GetTime()));
-            if (Mathf.Abs(timeDown - Info.GetTime()) < 0.5f) return;
+            if(Mathf.Abs(timeDown - Info.GetTime()) < 0.5f) return;
             holdStage = false;
-            if (Mathf.Abs(timeDown - Info.GetTime()) > (CorrectTime - 0.5f) && Mathf.Abs(timeDown - Info.GetTime()) < (CorrectTime + 0.5f)) corrects[2] = 1;
+            if(Mathf.Abs(timeDown - Info.GetTime()) > (CorrectTime - 0.5f) && Mathf.Abs(timeDown - Info.GetTime()) < (CorrectTime + 0.5f)) corrects[2] = 1;
             else corrects[2] = 0;
         }
-        if (neededPressesNow == 0) CheckInput();
+        if(neededPressesNow == 0) CheckInput();
     }
 
     private void CheckInput()
     {
         leds.ShowState(corrects);
-        Debug.LogFormat("[Bandboozled Again #{0}] Submission attempt leds are: {1}", _id, corrects.Select(x => (x==0)?"Red":((x==1)?"Green":"Yellow")).Join(", "));
-        if (corrects.All(x => x == 1)) Solve();
+        Debug.LogFormat("[Bandboozled Again #{0}] Submission attempt leds are: {1}", _id, corrects.Select(x => (x == 0) ? "Red" : ((x == 1) ? "Green" : "Yellow")).Join(", "));
+        if(corrects.All(x => x == 1)) Solve();
         else StartCoroutine(Strike());
     }
 
@@ -213,7 +222,7 @@ public class BandBoozLogic : MonoBehaviour {
     private IEnumerator SolveFanfare()
     {
         yield return new WaitForSeconds(0.5f);
-        for (int i = 0; i < texts.Length; i++)
+        for(int i = 0; i < texts.Length; i++)
         {
             texts[i].font = solvedFont;
             texts[i].GetComponent<MeshRenderer>().material = solvedFontMat;
@@ -225,7 +234,7 @@ public class BandBoozLogic : MonoBehaviour {
         screen.GetComponent<MeshRenderer>().material = solvedFontMat;
         switcher.SetMessages(new string[] { WinScr });
         yield return new WaitForSeconds(5f);
-        for (int i = 0; i < texts.Length; i++)
+        for(int i = 0; i < texts.Length; i++)
         {
             texts[i].text = "";
             buttonRenderers[i].material = WinMat2;
@@ -236,99 +245,99 @@ public class BandBoozLogic : MonoBehaviour {
     }
 
     //twitch plays
-    #pragma warning disable 414
+#pragma warning disable 414
     bool TwitchZenMode;
     private readonly string TwitchHelpMessage = @"!{0} hold <btn> at <#> for <#₂> [Holds the specified button when the last digit of the bomb's timer is '#' for '#₂' seconds] | !{0} press <btn> (btn2)... [Presses the specified button(s)] | Valid buttons are tl, tm, tr, bl, bm, or br";
-    #pragma warning restore 414
+#pragma warning restore 414
     IEnumerator ProcessTwitchCommand(string command)
     {
         string[] parameters = command.Split(' ');
-        if (Regex.IsMatch(parameters[0], @"^\s*hold\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
+        if(Regex.IsMatch(parameters[0], @"^\s*hold\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
         {
             yield return null;
-            if (parameters.Length == 1 || parameters.Length == 2 || parameters.Length == 3 || parameters.Length == 4 || parameters.Length == 5 || parameters.Length > 6)
+            if(parameters.Length == 1 || parameters.Length == 2 || parameters.Length == 3 || parameters.Length == 4 || parameters.Length == 5 || parameters.Length > 6)
             {
                 yield return "sendtochaterror Incorrect hold command format! Expected '!{1} hold <btn> at <#> for <#₂>'!";
             }
-            else if (parameters.Length == 6)
+            else if(parameters.Length == 6)
             {
-                if (!parameters[2].EqualsIgnoreCase("at"))
+                if(!parameters[2].EqualsIgnoreCase("at"))
                 {
                     yield return "sendtochaterror Incorrect hold command format! Expected '!{1} hold <btn> at <#> for <#₂>' but 'at' was not present!";
                     yield break;
                 }
-                if (!parameters[4].EqualsIgnoreCase("for"))
+                if(!parameters[4].EqualsIgnoreCase("for"))
                 {
                     yield return "sendtochaterror Incorrect hold command format! Expected '!{1} hold <btn> at <#> for <#₂>' but 'for' was not present!";
                     yield break;
                 }
                 string[] positions = { "tl", "tm", "tr", "bl", "bm", "br" };
-                if (!positions.Contains(parameters[1].ToLower()))
+                if(!positions.Contains(parameters[1].ToLower()))
                 {
                     yield return "sendtochaterror Incorrect hold command format! Expected '!{1} hold <btn> at <#> for <#₂>' but 'btn' is not a valid button!";
                     yield break;
                 }
                 int temp = 0;
-                if (!int.TryParse(parameters[3], out temp))
+                if(!int.TryParse(parameters[3], out temp))
                 {
                     yield return "sendtochaterror Incorrect hold command format! Expected '!{1} hold <btn> at <#> for <#₂>' but '#' is not a valid digit between 0-9!";
                     yield break;
                 }
-                if (temp < 0 || temp > 9)
+                if(temp < 0 || temp > 9)
                 {
                     yield return "sendtochaterror Incorrect hold command format! Expected '!{1} hold <btn> at <#> for <#₂>' but '#' is not a valid digit between 0-9!";
                     yield break;
                 }
                 int temp2 = 0;
-                if (!int.TryParse(parameters[5], out temp2))
+                if(!int.TryParse(parameters[5], out temp2))
                 {
                     yield return "sendtochaterror Incorrect hold command format! Expected '!{1} hold <btn> at <#> for <#₂>' but '#₂' is not a valid digit between 1-6!";
                     yield break;
                 }
-                if (temp2 < 1 || temp2 > 6)
+                if(temp2 < 1 || temp2 > 6)
                 {
                     yield return "sendtochaterror Incorrect hold command format! Expected '!{1} hold <btn> at <#> for <#₂>' but '#₂' is not a valid digit between 1-6!";
                     yield break;
                 }
-                while ((int)Info.GetTime() % 10 != temp) { yield return "trycancel Halted waiting to hold the button due to a request to cancel!"; }
+                while((int)Info.GetTime() % 10 != temp) { yield return "trycancel Halted waiting to hold the button due to a request to cancel!"; }
                 moduleSelectable.Children[Array.IndexOf(positions, parameters[1].ToLower())].OnInteract();
                 int timer = (int)Info.GetTime();
-                if (TwitchZenMode)
+                if(TwitchZenMode)
                     timer += temp2;
                 else
                     timer -= temp2;
-                while ((int)Info.GetTime() != timer) { yield return null; }
+                while((int)Info.GetTime() != timer) { yield return null; }
                 moduleSelectable.Children[Array.IndexOf(positions, parameters[1].ToLower())].OnInteractEnded();
-                if (neededPressesNow == 0 && !corrects.All(x => x == 1))
+                if(neededPressesNow == 0 && !corrects.All(x => x == 1))
                     yield return "strike";
             }
             yield break;
         }
-        if (Regex.IsMatch(parameters[0], @"^\s*press\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
+        if(Regex.IsMatch(parameters[0], @"^\s*press\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
         {
             yield return null;
-            if (parameters.Length == 1)
+            if(parameters.Length == 1)
             {
                 yield return "sendtochaterror Please specify the button(s) to press!";
             }
             else
             {
                 string[] positions = { "tl", "tm", "tr", "bl", "bm", "br" };
-                for (int i = 1; i < parameters.Length; i++)
+                for(int i = 1; i < parameters.Length; i++)
                 {
-                    if (!positions.Contains(parameters[i].ToLower()))
+                    if(!positions.Contains(parameters[i].ToLower()))
                     {
                         yield return "sendtochaterror!f The specified button to press '" + parameters[i] + "' is invalid!";
                         yield break;
                     }
                 }
-                for (int i = 1; i < parameters.Length; i++)
+                for(int i = 1; i < parameters.Length; i++)
                 {
                     moduleSelectable.Children[Array.IndexOf(positions, parameters[i].ToLower())].OnInteract();
                     yield return new WaitForSeconds(0.1f);
                     moduleSelectable.Children[Array.IndexOf(positions, parameters[i].ToLower())].OnInteractEnded();
                 }
-                if (neededPressesNow == 0 && !corrects.All(x => x == 1))
+                if(neededPressesNow == 0 && !corrects.All(x => x == 1))
                     yield return "strike";
             }
             yield break;
@@ -337,26 +346,26 @@ public class BandBoozLogic : MonoBehaviour {
 
     IEnumerator TwitchHandleForcedSolve()
     {
-        if (!holdStage)
+        if(!holdStage)
         {
-            if (corrects[0] != 1 || corrects[1] != 1 || corrects[2] != 1)
+            if(corrects[0] != 1 || corrects[1] != 1 || corrects[2] != 1)
             {
                 Module.HandlePass();
-                if (neededPressesNow == 0)
+                if(neededPressesNow == 0)
                     StopAllCoroutines();
                 yield break;
             }
-            if (neededPressesNow < neededPresses && corrects[3] != 1)
+            if(neededPressesNow < neededPresses && corrects[3] != 1)
             {
                 Module.HandlePass();
-                if (neededPressesNow == 0)
+                if(neededPressesNow == 0)
                     StopAllCoroutines();
                 yield break;
             }
 
-            for (int i = 0; i < buttonColors.Length; i++)
+            for(int i = 0; i < buttonColors.Length; i++)
             {
-                if (buttonColors[i])
+                if(buttonColors[i])
                 {
                     moduleSelectable.Children[i].OnInteract();
                     yield return new WaitForSeconds(0.1f);
@@ -366,24 +375,24 @@ public class BandBoozLogic : MonoBehaviour {
         }
         else
         {
-            while ((int)Info.GetTime() % 10 != holdStart)
+            while((int)Info.GetTime() % 10 != holdStart)
                 yield return true;
             moduleSelectable.Children[CorrectButton].OnInteract();
             float start = Info.GetTime();
-            if (TwitchZenMode)
+            if(TwitchZenMode)
             {
-                while (!(Mathf.Abs(start - Info.GetTime()) > CorrectTime - 0.5f && Mathf.Abs(start - Info.GetTime()) < CorrectTime + 0.5f) || (Info.GetTime() - start < 0.5f))
+                while(!(Mathf.Abs(start - Info.GetTime()) > CorrectTime - 0.5f && Mathf.Abs(start - Info.GetTime()) < CorrectTime + 0.5f) || (Info.GetTime() - start < 0.5f))
                     yield return null;
             }
             else
             {
-                while (!(Mathf.Abs(start - Info.GetTime()) > CorrectTime - 0.5f && Mathf.Abs(start - Info.GetTime()) < CorrectTime + 0.5f) || (start - Info.GetTime() < 0.5f))
+                while(!(Mathf.Abs(start - Info.GetTime()) > CorrectTime - 0.5f && Mathf.Abs(start - Info.GetTime()) < CorrectTime + 0.5f) || (start - Info.GetTime() < 0.5f))
                     yield return null;
             }
             moduleSelectable.Children[CorrectButton].OnInteractEnded();
-            for (int i = 0; i < buttonColors.Length; i++)
+            for(int i = 0; i < buttonColors.Length; i++)
             {
-                if (buttonColors[i])
+                if(buttonColors[i])
                 {
                     moduleSelectable.Children[i].OnInteract();
                     yield return new WaitForSeconds(0.1f);
@@ -404,10 +413,10 @@ public static class Extensions
 
     public static string ToBandzleglyphs(this char input)
     {
-        for (int i = 0; i < 6; i++)
-            for (int j = 0; j < 6; j++)
+        for(int i = 0; i < 6; i++)
+            for(int j = 0; j < 6; j++)
             {
-                if (input == TABLE[i][j])
+                if(input == TABLE[i][j])
                 {
                     return (UnityEngine.Random.Range(0, 1) == 0) ? LEFT[i].ToString() + TOP[j].ToString() : TOP[j].ToString() + LEFT[i].ToString();
                 }
@@ -418,22 +427,22 @@ public static class Extensions
     public static bool IsLoop(this string input)
     {
         int pos = 0;
-        foreach (char x in input)
+        foreach(char x in input)
         {
-            if (x == 'b' || x == 'h')
+            if(x == 'b' || x == 'h')
             {
-                if (pos == 0) pos = 1;
-                else if (pos == 1) pos = 0;
+                if(pos == 0) pos = 1;
+                else if(pos == 1) pos = 0;
             }
-            if (x == 'c' || x == 'f' || x == 'k')
+            if(x == 'c' || x == 'f' || x == 'k')
             {
-                if (pos == 1) pos = 2;
-                else if (pos == 2) pos = 1;
+                if(pos == 1) pos = 2;
+                else if(pos == 2) pos = 1;
             }
-            if (x == 'd')
+            if(x == 'd')
             {
-                if (pos == 0) pos = 2;
-                else if (pos == 2) pos = 0;
+                if(pos == 0) pos = 2;
+                else if(pos == 2) pos = 0;
             }
         }
         return pos == 2;

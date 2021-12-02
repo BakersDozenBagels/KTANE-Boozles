@@ -22,6 +22,6 @@ MonoBehaviour:
     Manuals: [url=https://ktane.timwi.de/HTML/Bandboozled%20Again.html]BandA[/url]
 
     [url=https://ktane.timwi.de/HTML/Ramboozled%20Again.html]RamA[/url]'
-  version: 2.2
+  version: 2.7
   outputFolder: build
   previewImage: {fileID: 2800000, guid: 13a41a962c9ec4c4f92ed0549cb36885, type: 3}

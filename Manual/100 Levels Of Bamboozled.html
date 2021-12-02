@@ -1,0 +1,705 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1">
+    <title>100 Levels Of Bamboozled — Keep Talking and Nobody Explodes Module</title>
+    <link rel="stylesheet" type="text/css" href="css/font.css">
+    <link rel="stylesheet" type="text/css" href="css/normalize.css">
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+    <script src="js/ktane-utils.js"></script>
+    <style>
+        .condition {
+            float: right;
+            padding: .2cm;
+            margin: 1cm;
+            border: 2px black solid;
+        }
+
+        .corner {
+            border: none;
+        }
+
+        table {
+            border: none;
+        }
+
+        .small-table tr td,
+        th {
+            padding: 7px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="section">
+        <div class="page page-bg-01">
+            <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                <span class="page-header-section-title">100 Levels Of Bamboozled</span>
+            </div>
+            <div class="page-content">
+                <img src="img/Component/100 Levels Of Bamboozled.svg" class="diagram">
+                <h2 class="fade">On the Subject of 100 Levels Of Bamboozled</h2>
+                <p class="flavour-text">Good luck.</p>
+                <p>This module presents you with six octagonal buttons with four LEDs between them. The large display
+                    will be cycling English words.</p>
+                <p>Note that the entire submission is calculated upon entering the last letter.</p>
+                <p>When you are doing a mission in the "100 Levels of Bamboozled" pack, follow the instruction under "During a Level". Otherwise, follow the instructions under "Outside of a Level".</p>
+                <h3>During a Level</h3>
+                <p>The module will initially cycle the phrase "Welcome to: Level X", where X is the current level.</p>
+                <p>Upon solving a set portion of the bomb, the bottom middle button will turn green and say "GO". Press
+                    it to begin.</p>
+                <p>Use the final word from the previous level as your starting word. If this is Level 1, use "GOODLUCK"
+                    instead.</p>
+                <p>Use the steps below in order to encrypt your starting word. Only use a step if its condition is true.
+                </p>
+                <h3>Outside of a Level</h3>
+                <p>Use "MINUSWORLD" as your starting word.</p>
+                <p>Use the steps below in order to encrypt your starting word. Always apply every step.</p>
+            </div>
+            <div class="page-footer relative-footer">Page 1 of 6</div>
+        </div>
+        <div class="page page-bg-02">
+            <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                <span class="page-header-section-title">100 Levels Of Bamboozled</span>
+            </div>
+            <div class="page-content">
+                <div class="condition">Always apply this step.</div>
+                <h3>Step 1: Initial Encryption</h3>
+                <p>Convert each letter of the starting word to a number, using A=0, B=1, ... Z=25.</p>
+                <p>Multiply each number by 7, then modulo each number by 26.</p>
+                <p>Convert each number back into a letter, using A=25, B=24, ... Z=0.</p>
+                <p>If any displayed phrases are wrapped with double quotes, append the letters of those phrases to the
+                    new word, in order.</p>
+                <p>If any displayed phrases are not wrapped with double quotes, and appear in the table below, perform
+                    the indicated instructions below, in the order of the phrases.</p>
+                <table>
+                    <tr>
+                        <th>Phrase</th>
+                        <th>Instruction</th>
+                    </tr>
+                    <tr>
+                        <td>ALFA</td>
+                        <td>Remove the first letter from your word.</td>
+                    </tr>
+                    <tr>
+                        <td>ALPHA</td>
+                        <td>Remove the last letter from your word.</td>
+                    </tr>
+                    <tr>
+                        <td>QUEBEC</td>
+                        <td>Reverse your word.</td>
+                    </tr>
+                    <tr>
+                        <td>QUEBEK</td>
+                        <td>Remove the middle letter from your word. If there is none, remove the two middle letters
+                            instead.</td>
+                    </tr>
+                    <tr>
+                        <td>CUEBEC</td>
+                        <td>Encrypt your word in an Atbash Cipher.</td>
+                    </tr>
+                    <tr>
+                        <td>WHISKEY</td>
+                        <td>Move the rightmost two letters from your word two spaces to the left, wrapping around if
+                            needed.</td>
+                    </tr>
+                    <tr>
+                        <td>WHISKY</td>
+                        <td>Move the leftmost two letters from your word two spaces to the right, wrapping around if
+                            needed.</td>
+                    </tr>
+                    <tr>
+                        <td>WISKEY</td>
+                        <td>Move every letter from your word two spaces to the left, wrapping around if needed.</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="page-footer relative-footer">Page 2 of 6</div>
+        </div>
+        <div class="page page-bg-03">
+            <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                <span class="page-header-section-title">100 Levels Of Bamboozled</span>
+            </div>
+            <div class="page-content">
+                <div class="condition">Apply this step only if<br />the level number is even.</div>
+                <h3>Step 2: Grid Encryption</h3>
+                <p>Repeat your word from the previous step 17 times.</p>
+                <p>Lay out your repeated word in a grid, where each row is 7 letters wide. Lay the letters out in
+                    reading order.</p>
+                <p>Discard the last row if it isn't complete.</p>
+                <p>Your new word is the rightmost column of the grid, read from bottom to top.</p>
+
+                <div class="condition">Apply this step only if the<br />level number is a multiple of 3.</div>
+                <h3>Step 3: Caesar Encryption</h3>
+                <p>Convert each letter of the word from the previous step to a number, using A=1, B=3, ... Z=51.</p>
+                <p>Take the sum of those numbers, and add the sum of every digit in the bomb's serial number. Caesar shift every letter
+                    in the previous step's word forward by this amount. This is your new word.</p>
+
+                <div class="condition">Apply this step only if the<br />bomb has a needy module.</div>
+                <h3>Step 4: Needy Encryption</h3>
+                <p>Take the number of currently active needy modules. Duplicate that many letters of the previous step's
+                    word in the following fashion:</p>
+                <ol>
+                    <li>Take the first letter.</li>
+                    <li>Insert a copy of it after it.</li>
+                    <li>Move on to the next letter, if applicable.</li>
+                </ol>
+            </div>
+            <div class="page-footer relative-footer">Page 3 of 6</div>
+        </div>
+        <div class="page page-bg-04">
+            <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                <span class="page-header-section-title">100 Levels Of Bamboozled</span>
+            </div>
+            <div class="page-content">
+                <div class="condition">Apply this step only if the<br />level number is greater than 20.</div>
+                <h3>Step 5: Big Encryption</h3>
+                <p>Replace every letter from the word from the previous step with its corresponding 2x2 grid in the
+                    table below. Your new word is the letters in these grids read in reverse reading order.</p>
+                <table>
+                    <tr>
+                        <th>A</th>
+                        <th>B</th>
+                        <th>C</th>
+                        <th>D</th>
+                        <th>E</th>
+                        <th>F</th>
+                        <th>G</th>
+                        <th>H</th>
+                    </tr>
+                    <tr>
+                        <td>
+                            <table>
+                                <tr>
+                                    <td>Z</td>
+                                    <td>S</td>
+                                </tr>
+                                <tr>
+                                    <td>N</td>
+                                    <td>V</td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td>
+                            <table>
+                                <tr>
+                                    <td>Y</td>
+                                    <td>T</td>
+                                </tr>
+                                <tr>
+                                    <td>O</td>
+                                    <td>U</td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td>
+                            <table>
+                                <tr>
+                                    <td>X</td>
+                                    <td>U</td>
+                                </tr>
+                                <tr>
+                                    <td>P</td>
+                                    <td>T</td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td>
+                            <table>
+                                <tr>
+                                    <td>W</td>
+                                    <td>V</td>
+                                </tr>
+                                <tr>
+                                    <td>Q</td>
+                                    <td>S</td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td>
+                            <table>
+                                <tr>
+                                    <td>V</td>
+                                    <td>W</td>
+                                </tr>
+                                <tr>
+                                    <td>R</td>
+                                    <td>R</td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td>
+                            <table>
+                                <tr>
+                                    <td>U</td>
+                                    <td>X</td>
+                                </tr>
+                                <tr>
+                                    <td>S</td>
+                                    <td>Q</td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td>
+                            <table>
+                                <tr>
+                                    <td>T</td>
+                                    <td>Y</td>
+                                </tr>
+                                <tr>
+                                    <td>T</td>
+                                    <td>P</td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td>
+                            <table>
+                                <tr>
+                                    <td>S</td>
+                                    <td>Z</td>
+                                </tr>
+                                <tr>
+                                    <td>U</td>
+                                    <td>O</td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>I</th>
+                        <th>J</th>
+                        <th>K</th>
+                        <th>L</th>
+                        <th>M</th>
+                        <th>N</th>
+                        <th>O</th>
+                        <th>P</th>
+                    </tr>
+                    <tr>
+                        <td>
+                            <table>
+                                <tr>
+                                    <td>R</td>
+                                    <td>A</td>
+                                </tr>
+                                <tr>
+                                    <td>V</td>
+                                    <td>N</td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td>
+                            <table>
+                                <tr>
+                                    <td>Q</td>
+                                    <td>B</td>
+                                </tr>
+                                <tr>
+                                    <td>W</td>
+                                    <td>M</td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td>
+                            <table>
+                                <tr>
+                                    <td>P</td>
+                                    <td>C</td>
+                                </tr>
+                                <tr>
+                                    <td>X</td>
+                                    <td>L</td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td>
+                            <table>
+                                <tr>
+                                    <td>O</td>
+                                    <td>D</td>
+                                </tr>
+                                <tr>
+                                    <td>Y</td>
+                                    <td>K</td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td>
+                            <table>
+                                <tr>
+                                    <td>N</td>
+                                    <td>E</td>
+                                </tr>
+                                <tr>
+                                    <td>Z</td>
+                                    <td>J</td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td>
+                            <table>
+                                <tr>
+                                    <td>M</td>
+                                    <td>F</td>
+                                </tr>
+                                <tr>
+                                    <td>A</td>
+                                    <td>I</td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td>
+                            <table>
+                                <tr>
+                                    <td>L</td>
+                                    <td>G</td>
+                                </tr>
+                                <tr>
+                                    <td>B</td>
+                                    <td>H</td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td>
+                            <table>
+                                <tr>
+                                    <td>K</td>
+                                    <td>H</td>
+                                </tr>
+                                <tr>
+                                    <td>C</td>
+                                    <td>G</td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Q</th>
+                        <th>R</th>
+                        <th>S</th>
+                        <th>T</th>
+                        <th>U</th>
+                        <th>V</th>
+                        <th>W</th>
+                        <th>X</th>
+                    </tr>
+                    <tr>
+                        <td>
+                            <table>
+                                <tr>
+                                    <td>J</td>
+                                    <td>I</td>
+                                </tr>
+                                <tr>
+                                    <td>D</td>
+                                    <td>F</td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td>
+                            <table>
+                                <tr>
+                                    <td>I</td>
+                                    <td>J</td>
+                                </tr>
+                                <tr>
+                                    <td>E</td>
+                                    <td>E</td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td>
+                            <table>
+                                <tr>
+                                    <td>H</td>
+                                    <td>K</td>
+                                </tr>
+                                <tr>
+                                    <td>F</td>
+                                    <td>D</td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td>
+                            <table>
+                                <tr>
+                                    <td>G</td>
+                                    <td>L</td>
+                                </tr>
+                                <tr>
+                                    <td>G</td>
+                                    <td>C</td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td>
+                            <table>
+                                <tr>
+                                    <td>F</td>
+                                    <td>M</td>
+                                </tr>
+                                <tr>
+                                    <td>H</td>
+                                    <td>B</td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td>
+                            <table>
+                                <tr>
+                                    <td>E</td>
+                                    <td>N</td>
+                                </tr>
+                                <tr>
+                                    <td>I</td>
+                                    <td>A</td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td>
+                            <table>
+                                <tr>
+                                    <td>D</td>
+                                    <td>O</td>
+                                </tr>
+                                <tr>
+                                    <td>J</td>
+                                    <td>Z</td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td>
+                            <table>
+                                <tr>
+                                    <td>C</td>
+                                    <td>P</td>
+                                </tr>
+                                <tr>
+                                    <td>K</td>
+                                    <td>Y</td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="corner"></td>
+                        <td class="corner"></td>
+                        <td class="corner"></td>
+                        <th>Y</th>
+                        <th>Z</th>
+                    </tr>
+                    <tr>
+                        <td class="corner"></td>
+                        <td class="corner"></td>
+                        <td class="corner"></td>
+                        <td>
+                            <table>
+                                <tr>
+                                    <td>B</td>
+                                    <td>Q</td>
+                                </tr>
+                                <tr>
+                                    <td>L</td>
+                                    <td>X</td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td>
+                            <table>
+                                <tr>
+                                    <td>A</td>
+                                    <td>R</td>
+                                </tr>
+                                <tr>
+                                    <td>M</td>
+                                    <td>W</td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+
+                <div class="condition">Apply this step only if the<br />level number is less than 50.</div>
+                <h3>Step 6: Small Encryption</h3>
+                <p>Remove from the word from the previous step every letter that occurs in your starting word. If you are
+                    left with zero or one letters, your new word is "NEVERLUCKY".</p>
+            </div>
+            <div class="page-footer relative-footer">Page 4 of 6</div>
+        </div>
+        <div class="page page-bg-05">
+            <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                <span class="page-header-section-title">100 Levels Of Bamboozled</span>
+            </div>
+            <div class="page-content">
+                <div class="condition">Apply this step only if the level<br />number is not a multiple of 4.</div>
+                <h3>Step 7: Color Encryption</h3>
+                <p>Take the colors of the six buttons in reading order, where red=1, green=2, and blue=3.</p>
+                <p>Concatenate the digits together and repeat them until they are as long as or longer than the
+                    previous step's word. Truncate the result to be exactly the same length by removing digits from the right.</p>
+                <p>Assosiate the letters of the previous step's word with the digits in the number obtained, where the
+                    first letter and first digit correspond.</p>
+                <p>Use the table below to turn each letter-number pair into a new letter.</p>
+                <p>The new letters in order are your new word.</p>
+                <table class="small-table">
+                    <tr>
+                        <th class="corner"></th>
+                        <th>A</th>
+                        <th>B</th>
+                        <th>C</th>
+                        <th>D</th>
+                        <th>E</th>
+                        <th>F</th>
+                        <th>G</th>
+                        <th>H</th>
+                        <th>I</th>
+                        <th>J</th>
+                        <th>K</th>
+                        <th>L</th>
+                        <th>M</th>
+                        <th>N</th>
+                        <th>O</th>
+                        <th>P</th>
+                        <th>Q</th>
+                        <th>R</th>
+                        <th>S</th>
+                        <th>T</th>
+                        <th>U</th>
+                        <th>V</th>
+                        <th>W</th>
+                        <th>X</th>
+                        <th>Y</th>
+                        <th>Z</th>
+                    </tr>
+                    <tr>
+                        <th>1</th>
+                        <td>Z</td>
+                        <td>Y</td>
+                        <td>X</td>
+                        <td>W</td>
+                        <td>V</td>
+                        <td>U</td>
+                        <td>T</td>
+                        <td>S</td>
+                        <td>R</td>
+                        <td>Q</td>
+                        <td>P</td>
+                        <td>O</td>
+                        <td>N</td>
+                        <td>M</td>
+                        <td>L</td>
+                        <td>K</td>
+                        <td>J</td>
+                        <td>I</td>
+                        <td>H</td>
+                        <td>G</td>
+                        <td>F</td>
+                        <td>E</td>
+                        <td>D</td>
+                        <td>C</td>
+                        <td>B</td>
+                        <td>A</td>
+                    </tr>
+                    <tr>
+                        <th>2</th>
+                        <td>N</td>
+                        <td>O</td>
+                        <td>P</td>
+                        <td>Q</td>
+                        <td>R</td>
+                        <td>S</td>
+                        <td>T</td>
+                        <td>U</td>
+                        <td>V</td>
+                        <td>W</td>
+                        <td>X</td>
+                        <td>Y</td>
+                        <td>Z</td>
+                        <td>A</td>
+                        <td>B</td>
+                        <td>C</td>
+                        <td>D</td>
+                        <td>E</td>
+                        <td>F</td>
+                        <td>G</td>
+                        <td>H</td>
+                        <td>I</td>
+                        <td>J</td>
+                        <td>K</td>
+                        <td>L</td>
+                        <td>M</td>
+                    </tr>
+                    <tr>
+                        <th>3</th>
+                        <td>A</td>
+                        <td>N</td>
+                        <td>B</td>
+                        <td>O</td>
+                        <td>C</td>
+                        <td>P</td>
+                        <td>D</td>
+                        <td>Q</td>
+                        <td>E</td>
+                        <td>R</td>
+                        <td>F</td>
+                        <td>S</td>
+                        <td>G</td>
+                        <td>T</td>
+                        <td>H</td>
+                        <td>U</td>
+                        <td>I</td>
+                        <td>V</td>
+                        <td>J</td>
+                        <td>W</td>
+                        <td>K</td>
+                        <td>X</td>
+                        <td>L</td>
+                        <td>Y</td>
+                        <td>M</td>
+                        <td>Z</td>
+                    </tr>
+                </table>
+
+                <div class="condition">Always apply this step.</div>
+                <h3>Step 8: Submission</h3>
+                <p>Take the first eight letters of the word from the previous step. If there are fewer than eight
+                    letters, use all of them. This is this level's final word.</p>
+                <p>Use the button with a left arrow to move to the previous set of buttons. Use the button with a right
+                    arrow to move to the next set of buttons.</p>
+                <p>Press the button corresponding to each letter of your final word in order.</p>
+                <p>Upon a complete submission, the LEDs will light up. Each LED represents 2 letters submitted. If the LED is red, both were incorrect. If the LED is yellow, one was incorrect. If the LED is green, both were correct.</p>
+            </div>
+            <div class="page-footer relative-footer">Page 5 of 6</div>
+        </div>
+        <div class="page page-bg-06">
+            <div class="page-header">
+                <span class="page-header-doc-title">Keep Talking and Nobody Explodes Mod</span>
+                <span class="page-header-section-title">100 Levels Of Bamboozled</span>
+            </div>
+            <div class="page-content">
+                <h3>Determining a Button's Letter</h3>
+                <p>Each button corresponds to a letter.</p>
+                <ul>
+                    <li>If the button has a single letter on it, that is the letter it corresponds to.</li>
+                    <li>If the button has a single letter wrapped in double quotes on it, the letter it corresponds to
+                        is that letter encrypted using an Atbash cipher.</li>
+                    <li>If the button has a single letter wrapped in single quotes on it, the letter it corresponds to
+                        is that letter encrypted using a Rot13 cipher.</li>
+                    <li>If the button has a correctly spelled NATO phonetic alphabet letter on it, the letter it
+                        corresponds to is that letter.</li>
+                    <li>If the button has an incorrectly spelled NATO phonetic alphabet letter on it, do not press that
+                        button.</li>
+                </ul>
+            </div>
+            <div class="page-footer relative-footer">Page 6 of 6</div>
+        </div>
+    </div>
+</body>
+
+</html>
