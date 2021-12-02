@@ -97,7 +97,7 @@ public class BandBoozLogic : MonoBehaviour
         }
         if(display.Take(display.Length / 2).Join("").IsLoop() != keyloop || display.Skip(display.Length / 2).Join("").IsLoop() != otherloop)
             goto retry;
-        Debug.LogFormat("[Bandboozled Again #{0}] Key word (decrypted) is: {1}", _id, key.Join("").ToUpperInvariant());
+        Debug.LogFormat("[Bandboozled Again #{0}] Key word (decrypted) is: {1}", _id, (a == 0 ? topWords : bottomWords)[b].Join("").ToUpperInvariant());
         Debug.LogFormat("[Bandboozled Again #{0}] A: {1} B: {2}", _id, A, B);
         Debug.LogFormat("[Bandboozled Again #{0}] Encrypted display is: {1}", _id, log);
         Debug.LogFormat("[Bandboozled Again #{0}] The top {1} a useless loop, and the bottom {2}.", _id, display.Take(display.Length / 2).Join("").IsLoop() ? "is" : "is not", display.Skip(display.Length / 2).Join("").IsLoop() ? "is" : "is not");
@@ -246,7 +246,7 @@ public class BandBoozLogic : MonoBehaviour
 
     //twitch plays
 #pragma warning disable 414
-    bool TwitchZenMode;
+    bool ZenModeActive;
     private readonly string TwitchHelpMessage = @"!{0} hold <btn> at <#> for <#₂> [Holds the specified button when the last digit of the bomb's timer is '#' for '#₂' seconds] | !{0} press <btn> (btn2)... [Presses the specified button(s)] | Valid buttons are tl, tm, tr, bl, bm, or br";
 #pragma warning restore 414
     IEnumerator ProcessTwitchCommand(string command)
@@ -299,10 +299,11 @@ public class BandBoozLogic : MonoBehaviour
                     yield return "sendtochaterror Incorrect hold command format! Expected '!{1} hold <btn> at <#> for <#₂>' but '#₂' is not a valid digit between 1-6!";
                     yield break;
                 }
+                while((int)Info.GetTime() % 10 == temp) { yield return "trycancel Halted waiting to hold the button due to a request to cancel!"; }
                 while((int)Info.GetTime() % 10 != temp) { yield return "trycancel Halted waiting to hold the button due to a request to cancel!"; }
                 moduleSelectable.Children[Array.IndexOf(positions, parameters[1].ToLower())].OnInteract();
                 int timer = (int)Info.GetTime();
-                if(TwitchZenMode)
+                if(ZenModeActive)
                     timer += temp2;
                 else
                     timer -= temp2;
@@ -336,6 +337,7 @@ public class BandBoozLogic : MonoBehaviour
                     moduleSelectable.Children[Array.IndexOf(positions, parameters[i].ToLower())].OnInteract();
                     yield return new WaitForSeconds(0.1f);
                     moduleSelectable.Children[Array.IndexOf(positions, parameters[i].ToLower())].OnInteractEnded();
+                    yield return new WaitForSeconds(0.15f);
                 }
                 if(neededPressesNow == 0 && !corrects.All(x => x == 1))
                     yield return "strike";
@@ -370,6 +372,7 @@ public class BandBoozLogic : MonoBehaviour
                     moduleSelectable.Children[i].OnInteract();
                     yield return new WaitForSeconds(0.1f);
                     moduleSelectable.Children[i].OnInteractEnded();
+                    yield return new WaitForSeconds(0.15f);
                 }
             }
         }
@@ -379,7 +382,7 @@ public class BandBoozLogic : MonoBehaviour
                 yield return true;
             moduleSelectable.Children[CorrectButton].OnInteract();
             float start = Info.GetTime();
-            if(TwitchZenMode)
+            if(ZenModeActive)
             {
                 while(!(Mathf.Abs(start - Info.GetTime()) > CorrectTime - 0.5f && Mathf.Abs(start - Info.GetTime()) < CorrectTime + 0.5f) || (Info.GetTime() - start < 0.5f))
                     yield return null;
@@ -397,6 +400,7 @@ public class BandBoozLogic : MonoBehaviour
                     moduleSelectable.Children[i].OnInteract();
                     yield return new WaitForSeconds(0.1f);
                     moduleSelectable.Children[i].OnInteractEnded();
+                    yield return new WaitForSeconds(0.15f);
                 }
             }
         }
