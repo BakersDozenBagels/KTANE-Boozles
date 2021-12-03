@@ -253,7 +253,7 @@ public class RamBoozLogic : MonoBehaviour {
 
     //twitch plays
     #pragma warning disable 414
-    bool TwitchZenMode;
+    bool ZenModeActive;
     private readonly string TwitchHelpMessage = @"!{0} press <btn> at <#> [Presses the specified button when the last digit of the bomb's timer is '#'] | Valid buttons are tl, tm, tr, bl, bm, or br";
     #pragma warning restore 414
     IEnumerator ProcessTwitchCommand(string command)
@@ -290,10 +290,11 @@ public class RamBoozLogic : MonoBehaviour {
                     yield return "sendtochaterror Incorrect press command format! Expected '!{1} press <btn> at <#>' but '#' is not a valid digit between 0-9!";
                     yield break;
                 }
+                while ((int)Info.GetTime() % 10 == temp) { yield return "trycancel Halted waiting to press the button due to a request to cancel!"; }
                 while ((int)Info.GetTime() % 10 != temp) { yield return "trycancel Halted waiting to press the button due to a request to cancel!"; }
                 moduleSelectable.Children[Array.IndexOf(positions, parameters[1].ToLower())].OnInteract();
                 float timer = Info.GetTime();
-                if (TwitchZenMode)
+                if (ZenModeActive)
                     while (Info.GetTime() <= (timer + 0.5f)) { yield return null; }
                 else
                     while (Info.GetTime() >= (timer - 0.5f)) { yield return null; }
@@ -333,7 +334,7 @@ public class RamBoozLogic : MonoBehaviour {
                         yield return true;
                     moduleSelectable.Children[i].OnInteract();
                     float start = Info.GetTime();
-                    if (TwitchZenMode)
+                    if (ZenModeActive)
                     {
                         while ((Info.GetTime() - start) < 0.5f)
                             yield return null;

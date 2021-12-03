@@ -39,10 +39,12 @@ public class BoozLEDManager : MonoBehaviour {
         StartCoroutine(FlickerLight2());
         StartCoroutine(FlickerLight3());
         StartCoroutine(FlickerLight4());
+        float scalar = transform.lossyScale.x;
         foreach (LED led in leds)
         {
             led.ChangeBrightness(0f);
             led.ChangeMaterial(LED.Colors.Red);
+            led.light.range *= scalar;
         }
     }
 
