@@ -174,11 +174,19 @@ public class BandBoozLogic : MonoBehaviour
         if(_isSolved) return;
         if(holdStage)
         {
-            Debug.LogFormat("[Bandboozled Again #{0}] Released after {1} seconds.", _id, Mathf.Abs(timeDown - Info.GetTime()));
-            if(Mathf.Abs(timeDown - Info.GetTime()) < 0.5f) return;
-            holdStage = false;
-            if(Mathf.Abs(timeDown - Info.GetTime()) > (CorrectTime - 0.5f) && Mathf.Abs(timeDown - Info.GetTime()) < (CorrectTime + 0.5f)) corrects[2] = 1;
-            else corrects[2] = 0;
+            if(_forceTap)
+            {
+                Debug.LogFormat("[Bandboozled Again #{0}] Released after 0.1 seconds.", _id, Mathf.Abs(timeDown - Info.GetTime()));
+                return;
+            }
+            else
+            {
+                Debug.LogFormat("[Bandboozled Again #{0}] Released after {1} seconds.", _id, Mathf.Abs(timeDown - Info.GetTime()));
+                if(Mathf.Abs(timeDown - Info.GetTime()) < 0.5f) return;
+                holdStage = false;
+                if(Mathf.Abs(timeDown - Info.GetTime()) > (CorrectTime - 0.5f) && Mathf.Abs(timeDown - Info.GetTime()) < (CorrectTime + 0.5f)) corrects[2] = 1;
+                else corrects[2] = 0;
+            }
         }
         if(neededPressesNow == 0) CheckInput();
     }
@@ -243,6 +251,8 @@ public class BandBoozLogic : MonoBehaviour
         StopAllCoroutines();
         leds.StopAllCoroutines();
     }
+
+    private bool _forceTap = false;
 
     //twitch plays
 #pragma warning disable 414
@@ -332,6 +342,7 @@ public class BandBoozLogic : MonoBehaviour
                         yield break;
                     }
                 }
+                _forceTap = true;
                 for(int i = 1; i < parameters.Length; i++)
                 {
                     moduleSelectable.Children[Array.IndexOf(positions, parameters[i].ToLower())].OnInteract();
@@ -339,6 +350,7 @@ public class BandBoozLogic : MonoBehaviour
                     moduleSelectable.Children[Array.IndexOf(positions, parameters[i].ToLower())].OnInteractEnded();
                     yield return new WaitForSeconds(0.15f);
                 }
+                _forceTap = false;
                 if(neededPressesNow == 0 && !corrects.All(x => x == 1))
                     yield return "strike";
             }
