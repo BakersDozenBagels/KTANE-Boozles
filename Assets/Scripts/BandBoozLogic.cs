@@ -133,6 +133,8 @@ public class BandBoozLogic : MonoBehaviour
         if(A % 2 == 0) buttonColors = buttonColors.Select(x => x ^= true).ToArray();
         neededPressesNow = neededPresses = buttonColors.Count(x => x);
         if(neededPresses <= 0) corrects[3] = 1;
+
+        Debug.LogFormat("[Bandboozled Again #{0}] Expected inputs:\n[Bandboozled Again #{0}] Hold button {1} at {2} for {3} seconds.\n[Bandboozled Again #{0}] Tap the following buttons: {4}", _id, CorrectButton + 1, holdStart, CorrectTime, Enumerable.Range(1, 6).Where(i => buttonColors[i - 1]).Join(", "));
     }
 
     private float timeDown = -1;
@@ -148,9 +150,17 @@ public class BandBoozLogic : MonoBehaviour
         {
             timeDown = Info.GetTime();
             if(input == CorrectButton) corrects[0] = 1;
-            else corrects[0] = 0;
+            else
+            {
+                corrects[0] = 0;
+                Debug.LogFormat("[Bandboozled Again #{0}] That is wrong, I expected button {1}.", _id, CorrectButton + 1);
+            }
             if(Mathf.FloorToInt(timeDown % 10) == holdStart) corrects[1] = 1;
-            else corrects[1] = 0;
+            else
+            {
+                corrects[1] = 0;
+                Debug.LogFormat("[Bandboozled Again #{0}] That is wrong, I you to press it on a {1}.", _id, holdStart);
+            }
         }
         else
         {
@@ -164,8 +174,11 @@ public class BandBoozLogic : MonoBehaviour
             {
                 if(neededPresses == neededPressesNow) corrects[3] = 0;
                 else if(corrects[3] == 1) corrects[3] = 2;
+                Debug.LogFormat("[Bandboozled Again #{0}] That is wrong, I did not expect you to press that button.", _id);
             }
             neededPressesNow--;
+
+            Debug.LogFormat("[Bandboozled Again #{0}] Remaining correct presses are: {1}", _id, Enumerable.Range(1, 6).Where(i => buttonColors[i - 1]).Join(", "));
         }
     }
 
@@ -185,7 +198,12 @@ public class BandBoozLogic : MonoBehaviour
                 if(Mathf.Abs(timeDown - Info.GetTime()) < 0.5f) return;
                 holdStage = false;
                 if(Mathf.Abs(timeDown - Info.GetTime()) > (CorrectTime - 0.5f) && Mathf.Abs(timeDown - Info.GetTime()) < (CorrectTime + 0.5f)) corrects[2] = 1;
-                else corrects[2] = 0;
+                else
+                {
+                    Debug.LogFormat("[Bandboozled Again #{0}] That is wrong, I expected {1} seconds.", _id, CorrectTime);
+                    corrects[2] = 0;
+                }
+                Debug.LogFormat("[Bandboozled Again #{0}] Moving on to stage 2. Tap the following buttons: {1}", _id, Enumerable.Range(1, 6).Where(i => buttonColors[i - 1]).Join(", "));
             }
         }
         if(neededPressesNow == 0) CheckInput();
