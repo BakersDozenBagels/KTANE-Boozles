@@ -126,9 +126,9 @@ public class BandBoozLogic : MonoBehaviour
             buttonColors[i] ^= labels[i].IsLoop();
         int[] soundOrder = new int[] { 0, 1, 2, 3, 4, 5 }.OrderBy(x => UnityEngine.Random.Range(0, 10000)).ToArray();
         foreach(ButtonAudio y in Module.GetComponentsInChildren<ButtonAudio>())
-            y.clips = buttonClips.OrderBy(x => soundOrder[System.Array.IndexOf(buttonClips, x)]).ToArray();
-        CorrectTime = System.Array.IndexOf(soundOrder, soundPosition) + 1;
-        Debug.LogFormat("[Bandboozled Again #{0}] Pitches' buttons (lowest to highest): {1}", _id, soundOrder.Select(x => x + 1).Join(", "));
+            y.clips = buttonClips.OrderBy(x => soundOrder[Array.IndexOf(buttonClips, x)]).ToArray();
+        CorrectTime = Array.IndexOf(soundOrder, soundPosition) + 1;
+        Debug.LogFormat("[Bandboozled Again #{0}] Buttons' pitches (lowest to highest): {1}", _id, Enumerable.Range(0,6).Select(s => Array.IndexOf(soundOrder, s) + 1).Join(", "));
         holdStart = B;
         if(A % 2 == 0) buttonColors = buttonColors.Select(x => x ^= true).ToArray();
         neededPressesNow = neededPresses = buttonColors.Count(x => x);
